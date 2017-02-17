@@ -12,7 +12,6 @@ class Game
     @attempts = 0
     @board = []
     @letter = :letter
-    # @word
     @petals = 5
     @petals_left = 5
     @guess_letters = []
