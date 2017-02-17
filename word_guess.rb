@@ -13,23 +13,30 @@ class Game
     @board = []
     @letter = :letter
     @word = ["Dog","Cat","Apple","Bear","Zoo","Coconut","Pineapple","Cake","Book","Smile"].sample.upcase
-    # puts @word
     @petals = 5
     @petals_left = 5
     @guess_letters = []
     @answer_array = []
     @incorrect_attempts = 0
     @imatch = []
-    @word_guess
-    # pick_word
     create_board
-
+    @number_of_hints = 0
+    @level
   end
-  #
-  # def pick_word
-  #   @word = ["Dog","Cat","Apple","Bear","Zoo","Coconut","Pineapple","Cake","Book","Smile"].sample.downcase
-  # end
 
+  def pick_word
+    puts "Please choose a level: EASY, MEDIUM, DIFFICULT"
+    @level = gets.chomp.downcase
+    if @level == "easy"
+      @word = ["Dog","Cat","Zoo","Cake","Book","Smile"].sample.downcase
+    elsif @level == "medium"
+      @word = ["Apple","Bear"].sample.downcase
+    elsif @level == "difficult"
+      @word = ["Coconut","Pineapple"].sample.downcase
+    else
+      puts "Choose the level."
+    end
+  end
   def create_board
     @word.length.times { @board << "_"}
   end
@@ -58,14 +65,15 @@ class Game
     if @petals_left > 0
 
 
-        show_flower
-        display_board
-        puts ("\nYou have guessed these letters:
-         #{@guess_letters}.").blue
-        puts "Please guess the word or another letter?"
-        check_guess
+      pick_word
+      show_flower
+      display_board
+      puts ("\nYou have guessed these letters:
+      #{@guess_letters}.").blue
+      puts "Please guess the word or another letter?"
+      check_guess
 
-        @letter = gets.chomp.upcase
+      @letter = gets.chomp.upcase
 
       if @letter.match(/^[A-Z]$/)
 
@@ -93,6 +101,16 @@ class Game
       end
       # puts "@@@@@@@"
       puts @petal
+    end
+  end
+
+  def hint
+    if @number_of_hints < 1
+      puts "Hint:"
+      hint_indexes = @board.each_index.select{|i| @board[i] == "_"}
+      hint_index = hint_indexes.sample
+      print @answer_array[hint_index]
+      @number_of_hints += 1
     end
   end
 
@@ -124,17 +142,9 @@ class Game
     end
   end
 
-
-
-    # def display
-    #   print @board
-    #   # print ascii art
-    #   flower #puts "\npetals = #{@petals}"
-    # end
-
-    def show_flower()
-      case @petals_left
-      when 5
+  def show_flower()
+    case @petals_left
+    when 5
         puts """
         (@)(@)(@)(@)(@)
          ,\\,\\,|,/,/,
@@ -143,7 +153,7 @@ class Game
             |   |
             |___|
      """.green
-      when 4
+    when 4
         puts """
         (@)(@)(@)(@)
          ,\\,\\,|,/,/,
@@ -152,7 +162,7 @@ class Game
             |   |
             |___|
      """.yellow
-      when 3
+    when 3
        puts """
        (@)(@)(@)
         ,\\,\\,|,/,/,
@@ -161,7 +171,7 @@ class Game
            |   |
            |___|
        """.red
-      when 2
+    when 2
         puts """
         (@)(@)
         ,\\,\\,|,/,/,
@@ -170,9 +180,8 @@ class Game
             |   |
             |___|
      """.red
-      when 1
-        puts "Hint:"
-      print @answer_array[0]
+    when 1
+      hint
        puts """
        (@)
       ,\\,\\,|,/,/,
