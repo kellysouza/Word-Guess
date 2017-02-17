@@ -2,6 +2,7 @@
 require 'Faker'
 require 'colorize'
 require 'colorized_string'
+require 'rainbow'
 
 
 class Game
@@ -19,6 +20,7 @@ class Game
     @answer_array = []
     @incorrect_attempts = 0
     @imatch = []
+    @word_guess
     # pick_word
     create_board
 
@@ -36,6 +38,21 @@ class Game
     print @board
   end
 
+  def check_guess
+    if @word == @letter
+      puts "\nCongratulations, you got all the letters.".green
+      show_answer
+      show_flower
+      puts "You beat Word Guess!!!".green
+    end
+  end
+
+
+  # def give_hint
+  #  index = @answer_array.index(@letter)
+  #  if @board[index] = '~'
+  #    puts
+
 
   def get_letter
     if @petals_left > 0
@@ -43,7 +60,11 @@ class Game
 
         show_flower
         display_board
-        puts "\nGuess the letter:"
+        puts ("\nYou have guessed these letters:
+         #{@guess_letters}.").blue
+        puts "Please guess the word or another letter?"
+        check_guess
+
         @letter = gets.chomp.upcase
 
       if @letter.match(/^[A-Z]$/)
@@ -51,22 +72,24 @@ class Game
         if find_duplicates
           puts "You already tried that letter!"
           puts "Try again (no penalties)."
-
         else
           push_guess_letters
           @attempts += 1
+
           if match_letter
             puts "YES! That letter is in the word!"
+            puts "=".green * 60
             modify_board
             check_for_win
           else
             puts "Nope! That letter is not in the word!"
+            puts "=".red * 60
             @incorrect_attempts += 1
             drop_flower
           end
         end
       else
-        puts "Oops,that is not valid input, please try again."
+        puts "Oops,that is not valid input, please try again.".red
       end
       # puts "@@@@@@@"
       puts @petal
@@ -103,11 +126,11 @@ class Game
 
 
 
-    def display
-      print @board
-      # print ascii art
-      flower #puts "\npetals = #{@petals}"
-    end
+    # def display
+    #   print @board
+    #   # print ascii art
+    #   flower #puts "\npetals = #{@petals}"
+    # end
 
     def show_flower()
       case @petals_left
@@ -141,16 +164,18 @@ class Game
       when 2
         puts """
         (@)(@)
-         ,\\,\\,|,/,/,
+        ,\\,\\,|,/,/,
             _\\|/_
            |_____|
             |   |
             |___|
      """.red
       when 1
+        puts "Hint:"
+      print @answer_array[0]
        puts """
        (@)
-        ,\\,\\,|,/,/,
+      ,\\,\\,|,/,/,
            _\\|/_
           |_____|
            |   |
