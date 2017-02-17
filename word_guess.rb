@@ -12,67 +12,51 @@ class Game
     @attempts = 0
     @board = []
     @letter = :letter
-    @word = ["Dog","Cat","Apple","Bear","Zoo","Coconut","Pineapple","Cake","Book","Smile"].sample.upcase
+    # @word
     @petals = 5
     @petals_left = 5
     @guess_letters = []
     @answer_array = []
     @incorrect_attempts = 0
     @imatch = []
-    create_board
     @number_of_hints = 0
-    @level
+    pick_word
+    create_board
   end
 
   def pick_word
     puts "Please choose a level: EASY, MEDIUM, DIFFICULT"
     @level = gets.chomp.downcase
     if @level == "easy"
-      @word = ["Dog","Cat","Zoo","Cake","Book","Smile"].sample.downcase
+      @word = ["Dog","Cat", "Bear", "zoo"].sample.upcase
     elsif @level == "medium"
-      @word = ["Apple","Bear"].sample.downcase
+      @word = ["Cake","Book","Smile"].sample.upcase
     elsif @level == "difficult"
-      @word = ["Coconut","Pineapple"].sample.downcase
+      @word = ["Coconut","Pineapple"].sample.upcase
     else
-      puts "Choose the level."
+      @word = ["Dog","Cat","Apple","Bear","Zoo","Coconut","Pineapple","Cake","Book","Smile"].sample.upcase
     end
   end
+
+
   def create_board
     @word.length.times { @board << "_"}
   end
+
 
   def display_board
     print @board
   end
 
-  def check_guess
-    if @word == @letter
-      puts "\nCongratulations, you got all the letters.".green
-      show_answer
-      show_flower
-      puts "You beat Word Guess!!!".green
-    end
-  end
 
-
-  # def give_hint
-  #  index = @answer_array.index(@letter)
-  #  if @board[index] = '~'
-  #    puts
-
-
-  def get_letter
+  def play_game
     if @petals_left > 0
-
-
-      pick_word
       show_flower
       display_board
       puts ("\nYou have guessed these letters:
       #{@guess_letters}.").blue
-      puts "Please guess the word or another letter?"
+      puts "Please guess a letter or wnter the word."
       check_guess
-
       @letter = gets.chomp.upcase
 
       if @letter.match(/^[A-Z]$/)
@@ -99,10 +83,24 @@ class Game
       else
         puts "Oops,that is not valid input, please try again.".red
       end
-      # puts "@@@@@@@"
       puts @petal
     end
   end
+
+
+
+  def match_letter
+    @answer_array = @word.split("")
+    return @answer_array.include?(@letter)
+  end
+
+    def find_duplicates
+      if @guess_letters.include?(@letter)
+        return true
+      else
+        return false
+      end
+    end
 
   def hint
     if @number_of_hints < 1
@@ -114,23 +112,21 @@ class Game
     end
   end
 
+  def check_guess
+    if @word == @letter
+      puts "\nCongratulations, you got all the letters.".green
+      show_answer
+      show_flower
+      puts "You beat Word Guess!!!".green
+    end
+  end
+
   def show_answer
     print "The answer was #{@word}!"
     puts
   end
 
-  def match_letter
-    @answer_array = @word.split("")
-    return @answer_array.include?(@letter)
-  end
 
-  def find_duplicates
-    if @guess_letters.include?(@letter)
-      return true
-    else
-      return false
-    end
-  end
 
   def check_for_win
     if !@board.include?("_")
@@ -161,7 +157,7 @@ class Game
            |_____|
             |   |
             |___|
-     """.yellow
+     """.green
     when 3
        puts """
        (@)(@)(@)
@@ -170,21 +166,21 @@ class Game
           |_____|
            |   |
            |___|
-       """.red
+       """.yellow
     when 2
         puts """
         (@)(@)
-        ,\\,\\,|,/,/,
+         ,\\,\\,|,/,/,
             _\\|/_
            |_____|
             |   |
             |___|
-     """.red
+     """.yellow
     when 1
       hint
        puts """
        (@)
-      ,\\,\\,|,/,/,
+        ,\\,\\,|,/,/,
            _\\|/_
           |_____|
            |   |
@@ -193,31 +189,15 @@ class Game
     when 0
       puts """
 
-    ,\\,\\,|,/,/,
+     ,\\,\\,|,/,/,
         _\\|/_
        |_____|
         |   |
         |___|
       """.red
 
-      end
     end
-
-
-
-
-
-
-
-
-
-
-
-
-  # def match_multiple_letters
-  #  @occurance =  @answer_array.count(@letter)
-  #  @occurance.times do
-  #
+  end
 
 
 
@@ -272,9 +252,5 @@ end
 
 still_playing = true
 while still_playing
-
-  game1.get_letter
+  game1.play_game
 end
-
-# game1.display
-# game1.get_letter
