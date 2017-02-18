@@ -1,9 +1,18 @@
 # Monalisa and Kelly's word guess game
-require 'Faker'
 require 'colorize'
 require 'colorized_string'
 require 'rainbow'
 
+class GameLevel
+  attr_accessor :easy, :medium, :difficult, :default
+
+  def initialize
+    @easy = ["Dog","Cat", "Bear", "zoo"]
+    @medium = ["Cake","Book","Smile"]
+    @difficult = ["Coconut","Pineapple"]
+    @default = ["Dog","Cat","Apple","Bear","Zoo","Coconut","Pineapple","Cake","Book","Smile"]
+  end
+end
 
 class Game
   attr_accessor :word, :letter, :board
@@ -19,6 +28,7 @@ class Game
     @incorrect_attempts = 0
     @imatch = []
     @number_of_hints = 0
+    @game_level = GameLevel.new
     pick_word
     create_board
   end
@@ -27,26 +37,23 @@ class Game
     puts "Please choose a level: EASY, MEDIUM, DIFFICULT"
     @level = gets.chomp.downcase
     if @level == "easy"
-      @word = ["Dog","Cat", "Bear", "zoo"].sample.upcase
+      @word = @game_level.easy.sample.upcase
     elsif @level == "medium"
-      @word = ["Cake","Book","Smile"].sample.upcase
+      @word = @game_level.medium.sample.upcase
     elsif @level == "difficult"
-      @word = ["Coconut","Pineapple"].sample.upcase
+      @word = @game_level.difficult.sample.upcase
     else
-      @word = ["Dog","Cat","Apple","Bear","Zoo","Coconut","Pineapple","Cake","Book","Smile"].sample.upcase
+      @word = @game_level.default.sample.upcase
     end
   end
-
 
   def create_board
     @word.length.times { @board << "_"}
   end
 
-
   def display_board
     print @board
   end
-
 
   def play_game
     if @petals_left > 0
@@ -55,11 +62,9 @@ class Game
       puts ("\nYou have guessed these letters:
       #{@guess_letters}.").blue
       puts "Please guess a letter or enter the word."
-      check_guess
       @letter = gets.chomp.upcase
-
+      check_guess
       if @letter.match(/^[A-Z]$/)
-
         if find_duplicates
           puts "You already tried that letter!"
           puts "Try again (no penalties)."
@@ -86,8 +91,6 @@ class Game
     end
   end
 
-
-
   def match_letter
     @answer_array = @word.split("")
     return @answer_array.include?(@letter)
@@ -106,7 +109,7 @@ class Game
       puts "Hint:"
       hint_indexes = @board.each_index.select{|i| @board[i] == "_"}
       hint_index = hint_indexes.sample
-      print @answer_array[hint_index]
+      print @answer_array[hint_index].cyan
       @number_of_hints += 1
     end
   end
@@ -117,22 +120,22 @@ class Game
       show_answer
       show_flower
       puts "You beat Word Guess!!!".green
+      exit
     end
   end
 
   def show_answer
-    print "The answer was #{@word}!"
+    print Rainbow("The answer was #{@word}!").blue.bg(:white)
     puts
   end
-
-
 
   def check_for_win
     if !@board.include?("_")
       display_board
-      puts "\nCongratulations, you got all the letters."
+      puts "\nCongratulations, you got all the letters.".green
       show_answer
-      puts "You beat Word Guess!!!"
+      show_flower
+      puts "You beat Word Guess!!!".green
       exit
     end
   end
@@ -187,7 +190,6 @@ class Game
     """.light_red
     when 0
       puts """
-
      ,\\,\\,|,/,/,
         _\\|/_
        |_____|
@@ -197,9 +199,6 @@ class Game
 
     end
   end
-
-
-
 
   def drop_flower
     if @petals_left > 1
@@ -216,7 +215,6 @@ class Game
     end
   end
 
-
   def push_guess_letters
     @guess_letters.push(@letter)
   end
@@ -227,26 +225,29 @@ class Game
     @imatch.each do
       |i| @board[i] = @letter
     end
-    # print @board
-    # puts "index stuff"
   end
 end
 
 
-
 #START GAME
+no_response = true
+while no_response
 
-puts "Would you like to play Word Guess?"
-play_game = gets.chomp.downcase
+  puts "Would you like to play Word Guess?"
+  play_game = gets.chomp.downcase
 
 
-if play_game == "yes"
-  game1 = Game.new
-elsif play_game == "no"
-  puts "Ok, come again soon!"
-  exit
-else
-  puts "Oops, try again"
+  if play_game == "yes"
+    game1 = Game.new
+    no_response = false
+  elsif play_game == "no"
+    puts "Ok, come again soon!"
+    exit
+  else
+    puts "Oops, try again"
+    puts "Would you like to play Word Guess?"
+    play_game = gets.chomp.downcase
+  end
 end
 
 still_playing = true
