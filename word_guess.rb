@@ -54,7 +54,7 @@ class Game
       display_board
       puts ("\nYou have guessed these letters:
       #{@guess_letters}.").blue
-      puts "Please guess a letter or wnter the word."
+      puts "Please guess a letter or enter the word."
       check_guess
       @letter = gets.chomp.upcase
 
